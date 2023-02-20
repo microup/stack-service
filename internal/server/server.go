@@ -1,14 +1,16 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"stack-service/internal/config"
 	"stack-service/internal/stack"
 	"syscall"
+	"time"
 )
+
+const connectTimeOut = 3 * time.Second
 
 type Server struct {
 	defaultPort string
@@ -23,10 +25,17 @@ func New(cfg *config.Config, stack *stack.Stack) *Server {
 }
 
 func (s *Server) Run() {
-
 	go func() {
-		if err := http.ListenAndServe(s.defaultPort, s.InitRoutes()); err != nil {
-			log.Panic(err)
+		//nolint:exhaustivestruct,exhaustruct
+		server := &http.Server{
+			Addr:              s.defaultPort,
+			ReadHeaderTimeout: connectTimeOut,
+			Handler:           s.InitRoutes(),
+		}
+
+		err := server.ListenAndServe()
+		if err != nil {
+			panic(err)
 		}
 	}()
 
