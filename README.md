@@ -22,11 +22,11 @@ To run a Docker container based on the previously built Docker image, use the fo
 
 This command will run a Docker container that maps the container's port 8080 to the host's port 8080 and restarts the container automatically in case of a failure.
 
-```Configuration```
+## Configuration
 
 The configuration for this project is stored in the config.yaml file, which sets the default port to 8080.
 
-```Stack Implementation```
+## Stack Implementation
 
 The stack implementation is provided in the stack package, which includes the following methods:
 
@@ -39,7 +39,7 @@ The stack implementation is provided in the stack package, which includes the fo
 
 The stack data is stored in a file named stack.json.
 
-```Dockerfile```
+## Dockerfile
 
 The Dockerfile is based on the latest Golang image and sets the default port to 8080. It copies the project files to the container's working directory, downloads the dependencies, builds the binary, and then deletes the source code files.
 
