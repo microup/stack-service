@@ -25,11 +25,17 @@ func Start() {
 
 	stack := stack.New()
 	err := stack.LoadStack()
+
 	if err != nil {
 		log.Panic(err)
 	}
 
-	defer stack.Save()
+	defer func() { 
+		err := stack.Save()
+		if err != nil {
+			log.Panic(err)
+		}
+	}()
 
 	server := server.New(configuration, stack)
 	server.Run()

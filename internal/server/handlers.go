@@ -4,6 +4,9 @@ import (
 	"net/http"
 )
 
+const stackEmpty = "stack is empty"
+const missingValue = "missing value"
+
 func (s *Server) InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 	
@@ -14,53 +17,59 @@ func (s *Server) InitRoutes() *http.ServeMux {
 	return mux
 }
 
-func (s *Server) HandlePush(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusBadRequest)
+func (s *Server) HandlePush(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != http.MethodPost {
+		writer.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
 
-	value := r.FormValue("value")
+	value := request.FormValue("value")
 	if value == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("missing value"))
+		writer.WriteHeader(http.StatusBadRequest)
+		_, _ = writer.Write([]byte(missingValue))
+
 		return
 	}
 
 	s.stack.Push(value)
-	w.WriteHeader(http.StatusOK)
+	writer.WriteHeader(http.StatusOK)
 }
 
-func (s *Server) HandlePop(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusBadRequest)
+func (s *Server) HandlePop(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != http.MethodGet {
+		writer.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
 
 	value, ok := s.stack.Pop()
 	if !ok {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("stack is empty"))
+		writer.WriteHeader(http.StatusNotFound)
+		_, _ = writer.Write([]byte(stackEmpty))
+
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(value))
+	writer.WriteHeader(http.StatusOK)
+	_, _ = writer.Write([]byte(value))
 }
 
-func (s *Server) HandleTop(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusBadRequest)
+func (s *Server) HandleTop(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != http.MethodGet {
+		writer.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
 
 	value, ok := s.stack.Top()
 	if !ok {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("stack is empty"))
+		writer.WriteHeader(http.StatusNotFound)
+		_, _ = writer.Write([]byte(stackEmpty))
+
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(value))
+	writer.WriteHeader(http.StatusOK)
+	_, _ = writer.Write([]byte(value))
 }

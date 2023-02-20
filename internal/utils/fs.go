@@ -7,5 +7,6 @@ func FileExists(filename string) bool {
     if os.IsNotExist(err) {
         return false
     }
+    
     return !info.IsDir()
 }
